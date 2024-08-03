@@ -4,8 +4,12 @@ import json
 import time
 import datetime
 import logging
-# from vnstock3 import Vnstock
+
 import src.data as dt
+
+
+
+
 # Kafka Producer Configuration
 log_filename = f"logs/{datetime.datetime.now().strftime('%Y-%m-%d')}_producerRT_script.log"
 logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', force=True)
