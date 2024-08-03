@@ -22,12 +22,12 @@ REGEX_PATTERN_PRICE_CHANGE_CAFE = configs.REGEX_PATTERN_PRICE_CHANGE_CAFE
 STOCK_COLUMNS_CAFEF = configs.STOCK_COLUMNS_CAFEF
 STOCK_COLUMNS_CAFEF_FINAL = configs.STOCK_COLUMNS_CAFEF_FINAL
 
-class DataLoaderCAFE2(DataLoadProto):
+class DataLoaderCAFE(DataLoadProto):
     def __init__(self, symbols, start, end, *arg, **karg):
         self.symbols = symbols
         self.start = start
         self.end = end
-        super(DataLoaderCAFE2, self).__init__(symbols, start, end)
+        super(DataLoaderCAFE, self).__init__(symbols, start, end)
 
     def download(self):
         stock_datas = []
@@ -37,13 +37,8 @@ class DataLoaderCAFE2(DataLoadProto):
         for symbol in symbols:
             stock_datas.append(self.download_one(symbol))
 
-        data = pd.concat(stock_datas, axis=0)
-        # data = data.sort_index(ascending=False)
-        
-        data['date'] = pd.to_datetime(data['date'])
-        data['date'] = data['date'].dt.strftime('%Y-%m-%d')
-        current_time = datetime.now().strftime("%H:%M:%S")
-        data['spec_time'] = current_time
+        data = pd.concat(stock_datas, axis=1)
+        data = data.sort_index(ascending=False)
         return data
 
     def download_one(self, symbol):
@@ -82,18 +77,27 @@ class DataLoaderCAFE2(DataLoadProto):
             'change', 'percent_change',
             'volume_match', 'value_match', 'volume_reconcile', 'value_reconcile'
         ]
+        
+        stock_data = stock_data.set_index('date')
         stock_data[list_numeric_columns] = stock_data[list_numeric_columns].astype(float)
-        stock_data['date'] = pd.to_datetime(stock_data['date'], dayfirst=True)
+        stock_data.index = list(map(lambda x: datetime.strptime(x, '%d/%m/%Y'), stock_data.index))
+        stock_data.index.name = 'date'
+        stock_data = stock_data.sort_index(ascending=False)
         stock_data.fillna(method='ffill', inplace=True)
         stock_data['total_volume'] = stock_data.volume_match + stock_data.volume_reconcile
         stock_data['total_value'] = stock_data.value_match + stock_data.value_reconcile
 
-        # logger.info('data {} from {} to {} have already cloned!' \
-        #              .format(symbol,
-        #                      utils.convert_text_dateformat(self.start, origin_type = '%d/%m/%Y', new_type = '%Y-%m-%d'),
-        #                      utils.convert_text_dateformat(self.end, origin_type='%d/%m/%Y', new_type='%Y-%m-%d')))
+        # Create multiple columns
+        iterables = [stock_data.columns.tolist(), [symbol]]
+        mulindex = pd.MultiIndex.from_product(iterables, names=['Attributes', 'Symbols'])
+        stock_data.columns = mulindex
+
+        logger.info('data {} from {} to {} have already cloned!' \
+                     .format(symbol,
+                             utils.convert_text_dateformat(self.start, origin_type = '%d/%m/%Y', new_type = '%Y-%m-%d'),
+                             utils.convert_text_dateformat(self.end, origin_type='%d/%m/%Y', new_type='%Y-%m-%d')))
         return stock_data
     
 # if __name__ == "__main__":  
-#     loader2 = DataLoaderCAFE(symbols=["VND"], start="2024-07-20", end="2024-07-22")
+#     loader2 = DataLoaderCAFE(symbols=["VND"], start="2017-01-10", end="2019-02-15")
 #     print(loader2.download())
