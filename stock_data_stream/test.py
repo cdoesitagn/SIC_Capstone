@@ -18,7 +18,7 @@ loader = dt.DataLoader_json(symbols=tickers,
            data_source="cafe",
            table_style="prefix")
 
-data = loader.download()
+# data = loader.download()
 # print(data)
 # for k, v in data.items():
 #     # print("Key", k)
