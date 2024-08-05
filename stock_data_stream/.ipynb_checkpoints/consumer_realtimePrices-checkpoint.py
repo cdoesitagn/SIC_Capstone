@@ -35,11 +35,15 @@ def insertId(data):
         else:
             print(f"No ticker found with symbol {dt['code']}")
             
+today = datetime.datetime.today().date()
+start_time = datetime.time(9, 0)
+end_time = datetime.time(15, 0)
+
 def consumer_thread(thread_id, topic):
     consumer = Consumer(kafkaConfigs)
     consumer.subscribe([topic])
     try: 
-        while True:
+        while (datetime.datetime.now().time() > start_time and datetime.datetime.now().time() < end_time):
             message = consumer.poll(1.0)  # Adjust the timeout as needed
             if message is None:
                 continue
@@ -51,7 +55,6 @@ def consumer_thread(thread_id, topic):
             else:
                 data = json.loads(message.value().decode('utf-8'))
                 insertId(data)
-                
                 # print(f"Received message at", datetime.datetime.now().time())
                 realtimePrices.insert_many(data)
                 logging.info("Insert data done at %s ", datetime.datetime.now().time())
@@ -60,7 +63,6 @@ def consumer_thread(thread_id, topic):
     finally:
         # Close the Kafka consumer gracefully when done
         consumer.close()
-        # print("Insert Done \n\n")
 
 threads = []
 for i, topic_name in enumerate(topic_names):
