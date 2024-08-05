@@ -32,18 +32,20 @@ for t in topic_names:
     else:
         print(t, "is not in topics")
 
-day_date_formated = "2024-08-05"
+today = datetime.datetime.today().date()
+start_time = datetime.time(9, 0)
+end_time = datetime.time(15, 0)
 
 def kafka_producer_thread(producer_id, topic_name):
     producer = Producer(kafka_config)
     tickers = icb_symbol[topic_name]
     loader = dt.DataLoader_json(symbols=tickers,
-           start=day_date_formated,
-           end=day_date_formated,
+           start=today,
+           end=today,
            minimal=False,
            data_source="cafe",
            table_style="prefix")
-    while (True):
+    while (datetime.datetime.now().time() > start_time and datetime.datetime.now().time() < end_time):
         data = loader.download()
         logging.info("Download done at %s", datetime.datetime.now().time())
         for k, v in data.items():	
