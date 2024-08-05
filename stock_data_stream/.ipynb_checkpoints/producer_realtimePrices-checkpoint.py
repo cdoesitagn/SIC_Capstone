@@ -51,7 +51,6 @@ def kafka_producer_thread(producer_id, topic_name):
         producer.flush()
         time.sleep(60)
 
-
 threads = []
 for i, topic_name in enumerate(topic_names):
     thread = threading.Thread(target=kafka_producer_thread, args=(i, topic_name))
@@ -61,23 +60,4 @@ for i, topic_name in enumerate(topic_names):
 # Join threads to the main thread
 for thread in threads:
     thread.join()
-# tickers = ['BCM', 'BID', 'BVH', 'CTG', 'FPT', 'GAS', 'GVR', 'HDB', 'HPG', 'MBB', 'MSN', 'MWG', 'PLX', 'POW', 'SAB', 'SHB', 'SSB', 'SSI', 'STB', 'TCB', 'TPB', 'VCB', 'VHM', 'VIB', 'VIC', 'VJC', 'VNM', 'VPB', 'VRE']
-# open_time = datetime.time(9, 15)
-# close_time = datetime.time(15, 0)
-# day_date = datetime.datetime.today().date()
-# # day_date_formated = day_date.strftime('%Y-%m-%d')
-# day_date_formated = "2024-08-05"
-# loader = dt.DataLoader_json(symbols=tickers,
-#            start=day_date_formated,
-#            end=day_date_formated,
-#            minimal=False,
-#            data_source="cafe",
-#            table_style="prefix")
-# # while (datetime.datetime.now().time() < close_time and datetime.datetime.now().time() > open_time):
-# while (True):
-#     data = loader.download()
-#     logging.info("Download done at %s", datetime.datetime.now().time())
-#     for k, v in data.items():	
-#         producer.produce('api1', key='key1', value=json.dumps(v))
-#     producer.flush()
-#     time.sleep(60)
+
