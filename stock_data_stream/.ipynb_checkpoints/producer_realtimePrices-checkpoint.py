@@ -1,5 +1,5 @@
 from confluent_kafka import Producer
-from confluent_kafka.admin import AdminClient, NewTopic
+from confluent_kafka.admin import AdminClient
 import requests
 import json
 import time
