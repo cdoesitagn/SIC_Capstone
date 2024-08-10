@@ -32,10 +32,13 @@ for t in topic_names:
     else:
         print(t, "is not in topics")
 
-today = datetime.datetime.today().date()
-start_time = datetime.time(9, 0)
-end_time = datetime.time(15, 0)
+today = datetime.datetime.today().date().strftime("%Y-%m-%d")
+start_time = datetime.time(8, 50)
+end_time = datetime.time(15, 10)
 
+if (datetime.datetime.now().time() > start_time and datetime.datetime.now().time() < end_time): 
+    logging.info("Time ok")
+    
 def kafka_producer_thread(producer_id, topic_name):
     producer = Producer(kafka_config)
     tickers = icb_symbol[topic_name]

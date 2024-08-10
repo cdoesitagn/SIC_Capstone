@@ -33,12 +33,13 @@ def kafka_producer_thread(producer_id, topic_name):
     tickers = icb_symbol[topic_name]
     loader = dt.DataLoader_json(symbols=tickers,
            start="2021-01-01",
-           end="2024-08-05",
+           end="2024-08-06",
            minimal=False,
            data_source="cafe",
            table_style="prefix")
     data = loader.download()
-    logging.info("Download done at %s", datetime.datetime.now().time())
+    # logging.info("Download done at %s", datetime.datetime.now().time())
+    print("Download done at %s", datetime.datetime.now().time())
     for k, v in data.items():	
         producer.produce("EOD", value=json.dumps(v))
     producer.flush()
